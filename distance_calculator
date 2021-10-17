@@ -1,0 +1,89 @@
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(A0,A1,A2,A3,A4,A5);
+
+
+int trigPin = 5;    
+int echoPin = 6;   
+int buzz= 10;
+long duration, dist, average;    
+
+long aver[3];   //array for average
+
+
+void setup() {  
+    analogWrite(6,100);
+    lcd.begin(16,2);     
+  Serial.begin(9600); 
+    pinMode(trigPin, OUTPUT);  
+    pinMode(echoPin, INPUT);  
+    pinMode(buzz,OUTPUT);
+    
+    Serial.println("setup start");
+    delay(5000);
+    Serial.println("setup ended");
+} 
+
+void cal() 
+{  
+digitalWrite(trigPin, LOW);
+delayMicroseconds(5);
+digitalWrite(trigPin, HIGH);
+delayMicroseconds(15);
+digitalWrite(trigPin, LOW);
+
+pinMode(echoPin, INPUT);
+duration = pulseIn(echoPin, HIGH);
+dist = (duration/2) / 29.1;    
+}
+
+void loop()
+{ 
+  for (int i=0;i<=2;i++)   
+  {
+   cal();               
+   aver[i]=dist;            
+   delay(10);             
+  }
+  
+ dist=(aver[0]+aver[1]+aver[2])/3;    
+ 
+if (dist<20 ) 
+{
+ Serial.println(dist);
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Object detected");
+    lcd.setCursor(11,0);
+    lcd.print(dist);
+    lcd.setCursor(14,0);
+   lcd.print("CM");
+ digitalWrite(buzz, HIGH);
+ delay(1000);
+}
+if (dist>20&&dist<60)
+
+{
+  Serial.println(dist);
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Distance = ");
+    lcd.setCursor(11,0);
+    lcd.print(dist);
+    lcd.setCursor(14,0);
+    lcd.print("CM");
+    digitalWrite(buzz, LOW);
+    delay(1000);
+}
+
+}
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
